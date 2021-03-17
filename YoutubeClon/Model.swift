@@ -7,7 +7,14 @@
 
 import Foundation
 
+protocol modelDelegate {
+    func videosFetched(_ videos:[Video])
+    
+}
+
 class Model{
+    
+    var delegate: modelDelegate?
     
     // buat fungsi untuk ngambil data dari Youtube API
     func getVideo(){
@@ -36,6 +43,14 @@ class Model{
                 decoder.dateDecodingStrategy = .iso8601
                 
                 let response = try decoder.decode(Response.self, from: data!)
+                
+                if response.items != nil {
+                    DispatchQueue.main.async {
+                        
+                        //calling "videosFetched" method of delegate
+                        self.delegate?.videosFetched(response.items!)
+                    }
+                }
                 
                 dump(response)
             }
